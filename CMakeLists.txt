@@ -3,7 +3,8 @@
 cmake_minimum_required(VERSION 3.10...3.17)
 
 # Project must be near the top
-project(awkward LANGUAGES CXX)
+#TODO: Remove CUDA before final merge;
+project(awkward LANGUAGES CXX CUDA)
 
 message(STATUS "CMake version ${CMAKE_VERSION}")
 
@@ -93,6 +94,14 @@ set_target_properties(awkward-static PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(awkward-static PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
 set_target_properties(awkward PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(awkward PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
+
+#TODO: These next lines are for configuring the IDE to autocomplete the studies directory, delete before merge
+file(GLOB CUDA_KERNEL_SOURCES "studies/cuda-kernels/loop-dependent-variable-kernels/manual_*.cu"
+                              "studies/cuda-kernels/restricted-loop-carried-array-kernels/manual_*.cu"
+                              "studies/cuda-kernels/simple-reducer-kernels/manual_*.cu")
+add_library(cuda-kernels ${CUDA_KERNEL_SOURCES})
+include_directories(studies/cuda-kernels)
+set_target_properties(cuda-kernels PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 if (APPLE)
   set_target_properties(awkward PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE INSTALL_RPATH "@loader_path")
