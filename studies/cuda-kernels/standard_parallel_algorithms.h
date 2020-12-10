@@ -136,22 +136,24 @@ exclusive_scan(T* out, const F* in, int64_t length) {
   }
 }
 
-template<typename C>
+template <typename C>
 __global__ void
-simple_reducer_kernel(int64_t *d_out, const C *in, int64_t length) {
+simple_reducer_kernel(int64_t* d_out, const C* in, int64_t length) {
   __shared__ int64_t arr[1024];
   int64_t tid = threadIdx.x;
-  int64_t thread_id = blockIdx.x * (blockDim.x * 2) + threadIdx.x;
-  if (thread_id < length) {
-    arr[tid] = in[thread_id] + in[thread_id + blockDim.x];
-    __syncthreads();
+  int64_t thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
-    for (int64_t s = blockDim.x / 2; s > 0; s >>= 1) {
-      if (tid < s) {
-        arr[tid] += arr[tid + s];
+  arr[tid] = in[thread_id];
+  __syncthreads();
+
+  for (unsigned int s = 1; s < blockDim.x; s *= 2) {
+    int index = 2 * s * tid;
+    if (index < blockDim.x) {
+      if (index + s < length) {
+        arr[index] += arr[index + s];
       }
-      __syncthreads();
     }
+    __syncthreads();
   }
 
   if (tid == 0) {
@@ -159,7 +161,9 @@ simple_reducer_kernel(int64_t *d_out, const C *in, int64_t length) {
   }
 }
 
-void inline simple_reducer_recurse(int64_t *d_out, int64_t *in, int64_t length) {
+void inline simple_reducer_recurse(int64_t* d_out,
+                                   int64_t* in,
+                                   int64_t length) {
   if (length == 1) {
     return;
   }
@@ -167,24 +171,30 @@ void inline simple_reducer_recurse(int64_t *d_out, int64_t *in, int64_t length) 
   dim3 blocks_per_grid = blocks(length);
   dim3 threads_per_block = threads(length);
 
-  simple_reducer_kernel<<<blocks_per_grid, threads_per_block>>>(d_out, in, length);
+  simple_reducer_kernel<<<blocks_per_grid, threads_per_block>>>(
+      d_out, in, length);
 
   length = ceil(static_cast<float>(length) / 1024.0);
 
   simple_reducer_recurse(d_out, d_out, length);
 }
 
-template<typename C>
-void simple_reducer(int64_t *out, const C *in, int64_t length) {
-  int64_t *d_out;
+template <typename C>
+void
+simple_reducer(int64_t* out, const C* in, int64_t length) {
+  int64_t* d_out;
 
-  HANDLE_ERROR(cudaMalloc((void **) &d_out, sizeof(int64_t) * ceil(static_cast<float>(length) / 1024.0)));
-  HANDLE_ERROR(cudaMemset(d_out, 0, sizeof(int64_t) * ceil(static_cast<float>(length) / 1024.0)));
+  HANDLE_ERROR(
+      cudaMalloc((void**)&d_out,
+                 sizeof(int64_t) * ceil(static_cast<float>(length) / 1024.0)));
+  HANDLE_ERROR(cudaMemset(
+      d_out, 0, sizeof(int64_t) * ceil(static_cast<float>(length) / 1024.0)));
 
   dim3 blocks_per_grid = blocks(length);
   dim3 threads_per_block = threads(length);
 
-  simple_reducer_kernel<<<blocks_per_grid, threads_per_block>>>(d_out, in, length);
+  simple_reducer_kernel<<<blocks_per_grid, threads_per_block>>>(
+      d_out, in, length);
 
   length = ceil(static_cast<float>(length) / 1024.0);
   if (length > 1) {

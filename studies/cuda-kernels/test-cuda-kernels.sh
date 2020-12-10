@@ -6,7 +6,7 @@ cp standard_parallel_algorithms.h loop-dependent-variable-kernels/manual_*.cu re
 cd ../..
 
 echo "Running setup"
-sudo pip uninstall awkward1_cuda_kernels && sudo ./cuda-build.sh --install
+sudo pip uninstall awkward_cuda_kernels && sudo ./cuda-build.sh --install
 python dev/generate-tests.py
 
 echo "Testing"
