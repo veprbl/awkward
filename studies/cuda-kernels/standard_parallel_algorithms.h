@@ -142,8 +142,11 @@ simple_reducer_kernel(int64_t* d_out, const C* in, int64_t length) {
   __shared__ int64_t arr[1024];
   int64_t tid = threadIdx.x;
   int64_t thread_id = blockIdx.x * blockDim.x + threadIdx.x;
-
-  arr[tid] = in[thread_id];
+  if(thread_id < length) {
+    arr[tid] = in[thread_id];
+  } else {
+    arr[tid] = 0;
+  }
   __syncthreads();
 
   for (unsigned int s = 1; s < blockDim.x; s *= 2) {

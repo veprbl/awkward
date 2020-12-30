@@ -6,11 +6,11 @@ cp standard_parallel_algorithms.h loop-dependent-variable-kernels/manual_*.cu re
 cd ../..
 
 echo "Running setup"
-sudo pip uninstall awkward_cuda_kernels && sudo ./cuda-build.sh --install
+python -m pip uninstall awkward_cuda_kernels && ./cuda-build.sh --install
 python dev/generate-tests.py
 
 echo "Testing"
-pytest -vvrs tests-cuda-kernels
+python -m pytest -vvrs tests-cuda-kernels
 
 echo "Cleaning up"
 mv src/cuda-kernels/manual_awkward_ListArray_num.cu src/
