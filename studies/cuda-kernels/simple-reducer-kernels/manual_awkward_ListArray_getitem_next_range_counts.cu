@@ -2,7 +2,7 @@
 
 #define FILENAME(line)          \
   FILENAME_FOR_EXCEPTIONS_CUDA( \
-      "src/cuda-kernels/awkward_IndexedArray_numnull.cu", line)
+      "src/cuda-kernels/awkward_ListArray_getitem_next_range_counts.cu", line)
 
 #include "awkward/kernels.h"
 #include "standard_parallel_algorithms.h"
@@ -41,53 +41,37 @@ total_sum_reducer(int64_t* total, const C* fromoffsets, int64_t lenstarts) {
 }
 
 template <typename C>
-ERROR
-awkward_ListArray_getitem_next_range_counts(int64_t* total,
-                                            const C* fromoffsets,
-                                            int64_t lenstarts) {
-  total_sum_reducer(total, fromoffsets, lenstarts);
+ERROR awkward_ListArray_getitem_next_range_counts(
+  int64_t* total,
+  const C* fromoffsets,
+  int64_t lenstarts) {
+	total_sum_reducer(total, fromoffsets, lenstarts);
   return success();
 }
-ERROR
-awkward_ListArray32_getitem_next_range_counts_64(int64_t* total,
-                                                 const int32_t* fromoffsets,
-                                                 int64_t lenstarts) {
+ERROR awkward_ListArray32_getitem_next_range_counts_64(
+  int64_t* total,
+  const int32_t* fromoffsets,
+  int64_t lenstarts) {
   return awkward_ListArray_getitem_next_range_counts<int32_t>(
-      total, fromoffsets, lenstarts);
+    total,
+    fromoffsets,
+    lenstarts);
 }
-ERROR
-awkward_ListArrayU32_getitem_next_range_counts_64(int64_t* total,
-                                                  const uint32_t* fromoffsets,
-                                                  int64_t lenstarts) {
+ERROR awkward_ListArrayU32_getitem_next_range_counts_64(
+  int64_t* total,
+  const uint32_t* fromoffsets,
+  int64_t lenstarts) {
   return awkward_ListArray_getitem_next_range_counts<uint32_t>(
-      total, fromoffsets, lenstarts);
+    total,
+    fromoffsets,
+    lenstarts);
 }
-ERROR
-awkward_ListArray64_getitem_next_range_counts_64(int64_t* total,
-                                                 const int64_t* fromoffsets,
-                                                 int64_t lenstarts) {
+ERROR awkward_ListArray64_getitem_next_range_counts_64(
+  int64_t* total,
+  const int64_t* fromoffsets,
+  int64_t lenstarts) {
   return awkward_ListArray_getitem_next_range_counts<int64_t>(
-      total, fromoffsets, lenstarts);
+    total,
+    fromoffsets,
+    lenstarts);
 }
-
-//int
-//main() {
-//  uint32_t fromoffsets[] = {1, 0, 2, 3, 1, 2, 0, 0, 1, 1, 2, 3, 1,
-//                            2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-//
-//  uint32_t* d_fromoffests;
-//
-//  int64_t length = 3;
-//
-//  int64_t d_total;
-//
-//  HANDLE_ERROR(cudaMalloc((void**)&d_fromoffests, sizeof(uint32_t) * length));
-//  HANDLE_ERROR(cudaMemcpy(d_fromoffests,
-//                          fromoffsets,
-//                          sizeof(uint32_t) * length,
-//                          cudaMemcpyHostToDevice));
-//  HANDLE_ERROR(cudaMalloc((void**)&d_total, sizeof(int64_t)));
-//
-//  auto error = awkward_ListArrayU32_getitem_next_range_counts_64(
-//      &d_total, d_fromoffests, length);
-//}
