@@ -203,7 +203,7 @@ simple_reducer(int64_t* out, const C* in, int64_t length) {
   if (length > 1) {
     simple_reducer_recurse(d_out, d_out, length);
   }
-
   HANDLE_ERROR(cudaMemcpy(out, d_out, sizeof(int64_t), cudaMemcpyDefault));
   HANDLE_ERROR(cudaFree(d_out));
 }
+
