@@ -6,24 +6,32 @@
 #include "awkward/common.h"
 
 extern "C" {
-  EXPORT_SYMBOL ERROR awkward_cuda_ptr_device_num(
-    int64_t* device_num,
-    void* ptr);
+dim3
+threads(int64_t length);
 
-  EXPORT_SYMBOL ERROR awkward_cuda_ptr_device_name(
-    char* name,
-    void* ptr);
+dim3
+blocks(int64_t length);
 
-  EXPORT_SYMBOL ERROR awkward_cuda_host_to_device(
-    void* to_ptr,
-    void* from_ptr,
-    int64_t bytelength);
+dim3
+threads_2d(int64_t length_x, int64_t length_y);
 
-  EXPORT_SYMBOL ERROR awkward_cuda_device_to_host(
-    void* to_ptr,
-    void* from_ptr,
-    int64_t bytelength);
+dim3
+blocks_2d(int64_t length_x, int64_t length_y);
 
+EXPORT_SYMBOL ERROR
+post_kernel_checks();
+
+EXPORT_SYMBOL ERROR
+awkward_cuda_ptr_device_num(int64_t* device_num, void* ptr);
+
+EXPORT_SYMBOL ERROR
+awkward_cuda_ptr_device_name(char* name, void* ptr);
+
+EXPORT_SYMBOL ERROR
+awkward_cuda_host_to_device(void* to_ptr, void* from_ptr, int64_t bytelength);
+
+EXPORT_SYMBOL ERROR
+awkward_cuda_device_to_host(void* to_ptr, void* from_ptr, int64_t bytelength);
 }
 
-#endif //AWKWARD_CUDA_UTILS_H
+#endif  //AWKWARD_CUDA_UTILS_H

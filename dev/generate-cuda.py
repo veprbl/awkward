@@ -542,10 +542,11 @@ def getdecl(name, args, templatestring, parent=False):
             params += ", " + value + " " + key
     if parent:
         code += (
-            "void cuda" + name[len("awkward") :] + "(" + params + ", ERROR* err) {\n"
+            "void cuda" + name[len("awkward") :] + "(" + params + ") {\n"
         )
     else:
         code += "ERROR " + name + "(" + params + ") {\n"
+
     return code
 
 
@@ -594,30 +595,11 @@ int64_t thready_dim = blockIdx.y * blockDim.y + threadIdx.y;
     for childfunc in indspec["specializations"]:
         args = getchildargs(childfunc, indspec)
         code += getdecl(childfunc["name"], args, "")
-        code += """  dim3 blocks_per_grid;
-dim3 threads_per_block;
+        code += """  dim3 blocks_per_grid = blocks({});
+dim3 threads_per_block = threads({});
 
-if ({0} > 1024 && {1} > 1024) {{
-blocks_per_grid = dim3(ceil({0} / 1024.0), ceil({1}/1024.0), 1);
-threads_per_block = dim3(1024, 1024, 1);
-}} else if ({0} > 1024) {{
-blocks_per_grid = dim3(ceil({0} / 1024.0), 1, 1);
-threads_per_block = dim3(1024, {1}, 1);
-}} else if ({1} > 1024) {{
-blocks_per_grid = dim3(1, ceil({1}/1024.0), 1);
-threads_per_block = dim3({0}, 1024, 1);
-}} else {{
-blocks_per_grid = dim3(1, 1, 1);
-threads_per_block = dim3({0}, {1}, 1);
-}}""".format(
+""".format(
             getxthreads(indspec["definition"]), getythreads(indspec["definition"])
-        )
-        code += " " * 2 + "ERROR h_err = success();\n"
-        code += " " * 2 + "ERROR* err = &h_err;\n"
-        code += " " * 2 + "ERROR* d_err;\n"
-        code += " " * 2 + "cudaMalloc((void**)&d_err, sizeof(ERROR));\n"
-        code += (
-            " " * 2 + "cudaMemcpy(d_err, err, sizeof(ERROR), cudaMemcpyHostToDevice);\n"
         )
         templatetypes = gettemplatetypes(childfunc, templateargs)
         paramnames = getparamnames(args)
@@ -625,15 +607,11 @@ threads_per_block = dim3({0}, {1}, 1);
         if templatetypes is not None and len(templatetypes) > 0:
             code += "<" + templatetypes + ">"
         code += (
-            " <<<blocks_per_grid, threads_per_block>>>(" + paramnames + ", d_err);\n"
+            " <<<blocks_per_grid, threads_per_block>>>(" + paramnames + " );\n"
         )
-        code += " " * 2 + "cudaDeviceSynchronize();\n"
-        code += (
-            " " * 2 + "cudaMemcpy(err, d_err, sizeof(ERROR), cudaMemcpyDeviceToHost);\n"
-        )
-        code += " " * 2 + "cudaFree(d_err);\n"
-        code += " " * 2 + "return *err;\n"
+        code += " " * 2 + "return post_kernel_checks();\n"
         code += "}\n\n"
+
     return code
 
 
@@ -644,8 +622,7 @@ if __name__ == "__main__":
     kernelname = args.kernelname
 
     code = """#include "awkward/kernels.h"
-#include <algorithm>
-#include <cstdio>
+#include "awkward/cuda-utils.h"
 
 """
 
