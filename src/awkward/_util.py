@@ -116,46 +116,6 @@ class MISSING:
     pass
 
 
-virtualtypes = (ak.layout.VirtualArray,)
-
-unknowntypes = (ak.layout.EmptyArray,)
-
-indexedtypes = (
-    ak.layout.IndexedArray32,
-    ak.layout.IndexedArrayU32,
-    ak.layout.IndexedArray64,
-)
-
-uniontypes = (
-    ak.layout.UnionArray8_32,
-    ak.layout.UnionArray8_U32,
-    ak.layout.UnionArray8_64,
-)
-
-indexedoptiontypes = (
-    ak.layout.IndexedOptionArray32,
-    ak.layout.IndexedOptionArray64,
-)
-
-optiontypes = (
-    ak.layout.IndexedOptionArray32,
-    ak.layout.IndexedOptionArray64,
-    ak.layout.ByteMaskedArray,
-    ak.layout.BitMaskedArray,
-    ak.layout.UnmaskedArray,
-)
-
-listtypes = (
-    ak.layout.RegularArray,
-    ak.layout.ListArray32,
-    ak.layout.ListArrayU32,
-    ak.layout.ListArray64,
-    ak.layout.ListOffsetArray32,
-    ak.layout.ListOffsetArrayU32,
-    ak.layout.ListOffsetArray64,
-)
-
-recordtypes = (ak.layout.RecordArray,)
 
 
 def regularize_path(path):

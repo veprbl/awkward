@@ -48,7 +48,6 @@ from awkward.operations.reducers import *
 __version__ = awkward._ext.__version__
 
 # call C++ startup function
-awkward._ext.startup()
 
 __all__ = [x for x in list(globals()) if not x.startswith("_") and x not in ("numpy",)]
 

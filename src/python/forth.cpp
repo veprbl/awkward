@@ -7,7 +7,6 @@
 #include <pybind11/numpy.h>
 
 #include "awkward/python/util.h"
-#include "awkward/python/content.h"
 #include "awkward/python/forth.h"
 
 template <typename T, typename I>
@@ -133,37 +132,37 @@ make_ForthMachineOf(const py::handle& m, const std::string& name) {
                py::arg("string_buffer_size") = 1024,
                py::arg("output_initial_size") = 1024,
                py::arg("output_resize_factor") = 1.5)
-          .def("__getitem__", [](const std::shared_ptr<ak::ForthMachineOf<T, I>>& self,
-                                 const std::string& key)
-                                 -> py::object {
-            if (self.get()->is_variable(key)) {
-              T out = self.get()->variable_at(key);
-              return py::cast(out);
-            }
-            else if (self.get()->is_output(key)) {
-              return box(self.get()->output_NumpyArray_at(key));
-            }
-            else if (self.get()->is_defined(key)) {
-              const std::vector<std::string> dictionary = self.get()->dictionary();
-              int64_t index = 0;
-              for (;  index < dictionary.size();  index++) {
-                if (dictionary[index] == key) {
-                  break;
-                }
-              }
-              ak::ContentPtr bytecodes = self.get()->bytecodes();
-              return box(bytecodes.get()->getitem_at_nowrap(index + 1));
-            }
-            else {
-                throw std::invalid_argument(
-                    std::string("unrecognized AwkwardForth variable/output/dictionary word: ")
-                    + key + FILENAME(__LINE__));
-            }
-          })
+          // .def("__getitem__", [](const std::shared_ptr<ak::ForthMachineOf<T, I>>& self,
+          //                        const std::string& key)
+          //                        -> py::object {
+          //   if (self.get()->is_variable(key)) {
+          //     T out = self.get()->variable_at(key);
+          //     return py::cast(out);
+          //   }
+          //   else if (self.get()->is_output(key)) {
+          //     return box(self.get()->output_NumpyArray_at(key));
+          //   }
+          //   else if (self.get()->is_defined(key)) {
+          //     const std::vector<std::string> dictionary = self.get()->dictionary();
+          //     int64_t index = 0;
+          //     for (;  index < dictionary.size();  index++) {
+          //       if (dictionary[index] == key) {
+          //         break;
+          //       }
+          //     }
+          //     ak::ContentPtr bytecodes = self.get()->bytecodes();
+          //     return box(bytecodes.get()->getitem_at_nowrap(index + 1));
+          //   }
+          //   else {
+          //       throw std::invalid_argument(
+          //           std::string("unrecognized AwkwardForth variable/output/dictionary word: ")
+          //           + key + FILENAME(__LINE__));
+          //   }
+          // })
           .def_property_readonly("source",
               &ak::ForthMachineOf<T, I>::source)
-          .def_property_readonly("bytecodes",
-              &ak::ForthMachineOf<T, I>::bytecodes)
+          // .def_property_readonly("bytecodes",
+          //     &ak::ForthMachineOf<T, I>::bytecodes)
           .def_property_readonly("decompiled",
               &ak::ForthMachineOf<T, I>::decompiled)
           .def_property_readonly("dictionary",
@@ -204,45 +203,45 @@ make_ForthMachineOf(const py::handle& m, const std::string& name) {
                                     const std::string& name) -> int64_t {
               return self.input_position_at(name);
           })
-          .def_property_readonly("outputs",
-            [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self) -> py::dict {
-              py::dict out;
-              for (auto name : self.get()->output_index()) {
-                py::object pyname = py::cast(name);
-                out[pyname] = box(self.get()->output_NumpyArray_at(name));
-              }
-              return out;
-          })
-          .def("output_NumpyArray",
-            [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
-               const std::string& name) -> py::object {
-              return box(self.get()->output_NumpyArray_at(name));
-          })
-          .def("output_Index8",
-            [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
-               const std::string& name) -> ak::Index8 {
-              return self.get()->output_Index8_at(name);
-          })
-          .def("output_IndexU8",
-            [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
-               const std::string& name) -> ak::IndexU8 {
-              return self.get()->output_IndexU8_at(name);
-          })
-          .def("output_Index32",
-            [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
-               const std::string& name) -> ak::Index32 {
-              return self.get()->output_Index32_at(name);
-          })
-          .def("output_IndexU32",
-            [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
-               const std::string& name) -> ak::IndexU32 {
-              return self.get()->output_IndexU32_at(name);
-          })
-          .def("output_Index64",
-            [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
-               const std::string& name) -> ak::Index64 {
-              return self.get()->output_Index64_at(name);
-          })
+          // .def_property_readonly("outputs",
+          //   [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self) -> py::dict {
+          //     py::dict out;
+          //     for (auto name : self.get()->output_index()) {
+          //       py::object pyname = py::cast(name);
+          //       out[pyname] = box(self.get()->output_NumpyArray_at(name));
+          //     }
+          //     return out;
+          // })
+          // .def("output_NumpyArray",
+          //   [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
+          //      const std::string& name) -> py::object {
+          //     return box(self.get()->output_NumpyArray_at(name));
+          // })
+          // .def("output_Index8",
+          //   [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
+          //      const std::string& name) -> ak::Index8 {
+          //     return self.get()->output_Index8_at(name);
+          // })
+          // .def("output_IndexU8",
+          //   [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
+          //      const std::string& name) -> ak::IndexU8 {
+          //     return self.get()->output_IndexU8_at(name);
+          // })
+          // .def("output_Index32",
+          //   [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
+          //      const std::string& name) -> ak::Index32 {
+          //     return self.get()->output_Index32_at(name);
+          // })
+          // .def("output_IndexU32",
+          //   [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
+          //      const std::string& name) -> ak::IndexU32 {
+          //     return self.get()->output_IndexU32_at(name);
+          // })
+          // .def("output_Index64",
+          //   [](const std::shared_ptr<ak::ForthMachineOf<T, I>> self,
+          //      const std::string& name) -> ak::Index64 {
+          //     return self.get()->output_Index64_at(name);
+          // })
           .def("reset", &ak::ForthMachineOf<T, I>::reset)
           .def("begin", [](ak::ForthMachineOf<T, I>& self,
                            const py::dict& inputs) -> void {

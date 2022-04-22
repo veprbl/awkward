@@ -10,6 +10,7 @@
 #include <array>
 
 #include "awkward/common.h"
+#include "awkward/util.h"
 
 #ifndef _MSC_VER
   #include "dlfcn.h"

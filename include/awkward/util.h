@@ -94,10 +94,10 @@ namespace awkward {
     /// @param classname The name of this class to include in the error
     /// message.
     /// @param id The Identities to include in the error message.
-    void
-    handle_error(const struct Error &err,
-                 const std::string &classname = std::string(""),
-                 const Identities *id = nullptr);
+    // void
+    // handle_error(const struct Error &err,
+    //              const std::string &classname = std::string(""),
+    //              const Identities *id = nullptr);
 
     /// @brief Puts quotation marks around a string and escapes the appropriate
     /// characters.
@@ -112,19 +112,19 @@ namespace awkward {
     std::string
       quote(const std::string& x);
 
-    /// @brief Converts an `offsets` index (from
-    /// {@link ListOffsetArrayOf ListOffsetArray}, for instance) into a
-    /// `starts` index by viewing it with the last element dropped.
-    template <typename T>
-    IndexOf <T>
-      make_starts(const IndexOf <T> &offsets);
+    // /// @brief Converts an `offsets` index (from
+    // /// {@link ListOffsetArrayOf ListOffsetArray}, for instance) into a
+    // /// `starts` index by viewing it with the last element dropped.
+    // template <typename T>
+    // IndexOf <T>
+    //   make_starts(const IndexOf <T> &offsets);
 
-    /// @brief Converts an `offsets` index (from
-    /// {@link ListOffsetArrayOf ListOffsetArray}, for instance) into a
-    /// `stops` index by viewing it with the first element dropped.
-    template <typename T>
-    IndexOf<T>
-      make_stops(const IndexOf<T>& offsets);
+    // /// @brief Converts an `offsets` index (from
+    // /// {@link ListOffsetArrayOf ListOffsetArray}, for instance) into a
+    // /// `stops` index by viewing it with the first element dropped.
+    // template <typename T>
+    // IndexOf<T>
+    //   make_stops(const IndexOf<T>& offsets);
 
     using RecordLookup    = std::vector<std::string>;
     using RecordLookupPtr = std::shared_ptr<RecordLookup>;

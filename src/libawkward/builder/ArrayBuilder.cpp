@@ -6,7 +6,6 @@
 #include <stdexcept>
 
 #include "awkward/common.h"
-#include "awkward/Content.h"
 #include "awkward/builder/ArrayBuilderOptions.h"
 #include "awkward/builder/Builder.h"
 #include "awkward/builder/UnknownBuilder.h"
